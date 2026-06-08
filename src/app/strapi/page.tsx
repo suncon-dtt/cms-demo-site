@@ -68,7 +68,11 @@ export default async function StrapiPage() {
             <div key={item.id} style={{ background: 'white', borderRadius: 10, padding: '1.5rem', border: '1px solid #e0e0e0', borderLeft: '4px solid #4945ff' }}>
               <h2 style={{ margin: '0 0 0.5rem', fontSize: '1.2rem' }}>{title}</h2>
               <p style={{ margin: '0 0 0.5rem', color: '#888', fontSize: '0.8rem' }}>ID: {item.id}</p>
-              {body && <p style={{ margin: 0, color: '#444' }}>{body}</p>}
+              {body && (
+                <p style={{ margin: 0, color: '#444' }}>
+                  {typeof body === 'string' ? body : JSON.stringify(body)}
+                </p>
+              )}
               <details style={{ marginTop: '0.75rem' }}>
                 <summary style={{ cursor: 'pointer', color: '#888', fontSize: '0.8rem' }}>Raw attributes</summary>
                 <pre style={{ background: '#f5f5f5', padding: '0.75rem', borderRadius: 6, fontSize: '0.75rem', overflow: 'auto', marginTop: '0.5rem' }}>
