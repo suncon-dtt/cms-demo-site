@@ -73,13 +73,15 @@ export default async function StrapiPage() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
         {result.items.map((item) => {
-          const attrs = item.attributes || item
+          // Strapi v5: fields are directly on item, no attributes wrapper
+          // Strapi v4: fields are under item.attributes
+          const attrs = item.attributes ?? item
           const title = attrs.title || attrs.name || attrs.heading || `Recipe #${item.id}`
           const intro = extractText(attrs.intro) || extractText(attrs.body)?.slice(0, 120) || extractText(attrs.description)?.slice(0, 120)
           const author = attrs.author ?? null
 
-          const coverData = attrs.cover?.data?.attributes ?? attrs.image?.data?.attributes ?? null
-          const rawUrl = coverData?.url ?? null
+          // v5: item.cover.url  |  v4: item.attributes.cover.data.attributes.url
+          const rawUrl = attrs.cover?.url ?? attrs.cover?.data?.attributes?.url ?? attrs.image?.url ?? attrs.image?.data?.attributes?.url ?? null
           const imageUrl = rawUrl
             ? rawUrl.startsWith('http') ? rawUrl : `${result.url}${rawUrl}`
             : null

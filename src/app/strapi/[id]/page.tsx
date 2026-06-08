@@ -47,15 +47,16 @@ export default async function StrapiArticlePage({ params }: { params: { id: stri
     error = e.message
   }
 
-  const attrs = item?.attributes || item || {}
+  // Strapi v5: fields directly on item | v4: under item.attributes
+  const attrs = item?.attributes ?? item ?? {}
   const title = attrs.title || attrs.name || `Recipe #${params.id}`
   const intro = extractText(attrs.intro)
   const body = extractText(attrs.body || attrs.content || attrs.description)
   const author = attrs.author ?? null
   const publishedAt = attrs.publishedAt ?? attrs.createdAt ?? null
 
-  const coverData = attrs.cover?.data?.attributes ?? attrs.image?.data?.attributes ?? null
-  const rawUrl = coverData?.url ?? null
+  // v5: attrs.cover.url  |  v4: attrs.cover.data.attributes.url
+  const rawUrl = attrs.cover?.url ?? attrs.cover?.data?.attributes?.url ?? attrs.image?.url ?? attrs.image?.data?.attributes?.url ?? null
   const imageUrl = rawUrl
     ? rawUrl.startsWith('http') ? rawUrl : `${baseUrl}${rawUrl}`
     : null
