@@ -4,11 +4,14 @@ export async function GET() {
   const token = process.env.STORYBLOK_MANAGEMENT_TOKEN
   const spaceId = process.env.NEXT_PUBLIC_STORYBLOK_SPACE_ID
 
-  if (!token || !spaceId) {
-    return NextResponse.json(
-      { error: 'STORYBLOK_MANAGEMENT_TOKEN or NEXT_PUBLIC_STORYBLOK_SPACE_ID not set in environment variables' },
-      { status: 500 }
-    )
+  if (!token && !spaceId) {
+    return NextResponse.json({ error: 'Both STORYBLOK_MANAGEMENT_TOKEN and NEXT_PUBLIC_STORYBLOK_SPACE_ID are not set' }, { status: 500 })
+  }
+  if (!token) {
+    return NextResponse.json({ error: 'STORYBLOK_MANAGEMENT_TOKEN is not set in environment variables' }, { status: 500 })
+  }
+  if (!spaceId) {
+    return NextResponse.json({ error: 'NEXT_PUBLIC_STORYBLOK_SPACE_ID is not set in environment variables' }, { status: 500 })
   }
 
   try {
