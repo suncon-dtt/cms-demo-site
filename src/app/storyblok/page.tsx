@@ -1,4 +1,5 @@
 import { apiPlugin, storyblokInit } from '@storyblok/js'
+import ExportButton from './ExportButton'
 
 export const revalidate = 0
 
@@ -42,11 +43,14 @@ export default async function StoryblokPage() {
   return (
     <main style={{ maxWidth: 1000, margin: '0 auto', padding: '3rem 1.5rem' }}>
       <div style={{ marginBottom: '2.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.4rem' }}>
-          <h1 style={{ margin: 0, fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.02em' }}>Italian Cookbook</h1>
-          <span style={{ fontSize: '0.7rem', fontWeight: 700, color: accentColor, background: `${accentColor}18`, borderRadius: 4, padding: '3px 8px', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-            Storyblok
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <h1 style={{ margin: 0, fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.02em' }}>Italian Cookbook</h1>
+            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: accentColor, background: `${accentColor}18`, borderRadius: 4, padding: '3px 8px', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+              Storyblok
+            </span>
+          </div>
+          <ExportButton />
         </div>
         <p style={{ margin: 0, color: '#666', fontSize: '0.925rem' }}>
           Recipes edited live via the Storyblok visual editor.
