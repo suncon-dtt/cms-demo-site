@@ -8,7 +8,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
-        <style>{`
+        <style dangerouslySetInnerHTML={{ __html: `
           *, *::before, *::after { box-sizing: border-box; }
           html { font-size: 16px; }
           body {
@@ -21,7 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           a { color: inherit; }
           nav a:hover { color: #fff !important; }
           .nav-link-active { color: #fff !important; border-bottom: 2px solid #fff; }
-        `}</style>
+        `}} />
       </head>
       <body>
         <nav style={{
