@@ -87,7 +87,7 @@ export default async function StrapiPage() {
             : null
 
           return (
-            <a key={item.id} href={`/strapi/${item.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+            <a key={item.id} href={`/strapi/${item.documentId ?? item.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
               <div style={{
                 background: '#fff',
                 borderRadius: 12,
