@@ -5,8 +5,6 @@ import StoryblokLivePreview from '../StoryblokLivePreview'
 
 export const revalidate = 0
 
-const accentColor = '#00b3b0'
-
 function getApi() {
   const result = storyblokInit({
     accessToken: process.env.NEXT_PUBLIC_STORYBLOK_TOKEN!,
@@ -17,7 +15,6 @@ function getApi() {
 }
 
 export default async function StoryblokStoryPage({ params }: { params: { slug: string } }) {
-  const { isEnabled: preview } = draftMode()
   const api = getApi()
 
   let story: any = null
@@ -29,25 +26,15 @@ export default async function StoryblokStoryPage({ params }: { params: { slug: s
     })
     story = data.story
   } catch (e: any) {
-    error = e.message ?? 'Story not found'
+    error = e.message ?? 'Recipe not found'
   }
 
   return (
     <main style={{ maxWidth: 800, margin: '0 auto', padding: '3rem 1.5rem' }}>
       <div style={{ marginBottom: '2rem' }}>
         <a href="/storyblok" style={{ fontSize: '0.825rem', color: '#aaa', textDecoration: 'none' }}>
-          ← All stories
+          ← Italian Cookbook
         </a>
-      </div>
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '2rem', paddingBottom: '1.25rem', borderBottom: '1px solid #eee' }}>
-        <span style={{ width: 10, height: 10, borderRadius: '50%', background: accentColor, display: 'inline-block' }} />
-        <span style={{ fontSize: '0.78rem', fontWeight: 600, color: accentColor, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Storyblok</span>
-        {preview && (
-          <span style={{ marginLeft: '0.5rem', fontSize: '0.7rem', background: '#fef9c3', color: '#854d0e', padding: '2px 8px', borderRadius: 4, fontWeight: 600 }}>
-            Live Preview Active
-          </span>
-        )}
       </div>
 
       {error ? (
@@ -59,12 +46,6 @@ export default async function StoryblokStoryPage({ params }: { params: { slug: s
           <StoryblokLivePreview initialStory={story} />
         </StoryblokProvider>
       ) : null}
-
-      {!preview && (
-        <div style={{ marginTop: '2.5rem', background: '#f0fffe', border: '1px solid #99e6e4', borderRadius: 8, padding: '1rem 1.25rem', fontSize: '0.825rem', color: '#555' }}>
-          <strong style={{ color: accentColor }}>Visual editor tip:</strong> To edit this page live, open your Storyblok space, go to this story, and click the preview icon. Changes appear instantly without saving.
-        </div>
-      )}
     </main>
   )
 }

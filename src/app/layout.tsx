@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'CMS Comparison Demo',
+  title: 'Cookbook Demo',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -14,13 +14,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           body {
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f8f8f8;
+            background: #faf9f7;
             color: #1a1a1a;
             line-height: 1.6;
           }
           a { color: inherit; }
-          nav a:hover { color: #fff !important; }
-          .nav-link-active { color: #fff !important; border-bottom: 2px solid #fff; }
+          nav a:hover { opacity: 1 !important; }
         `}} />
       </head>
       <body>
@@ -29,39 +28,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           padding: '0 2rem',
           display: 'flex',
           alignItems: 'center',
-          gap: '0',
           height: 56,
-          borderBottom: '1px solid #222',
+          gap: '0',
         }}>
-          <a href="/" style={{
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            color: '#fff',
-            textDecoration: 'none',
-            letterSpacing: '0.02em',
-            marginRight: '2rem',
-          }}>
-            CMS Demo
+          <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#fff', letterSpacing: '0.02em', marginRight: '2rem' }}>
+            Cookbook Demo
+          </span>
+          <a href="/storyblok" style={{ color: '#999', textDecoration: 'none', fontSize: '0.9rem', padding: '0 1rem', height: '100%', display: 'flex', alignItems: 'center' }}>
+            Italian Cookbook
           </a>
-          {[
-            { href: '/', label: 'Home' },
-            { href: '/storyblok', label: 'Storyblok' },
-            { href: '/strapi', label: 'Strapi' },
-            { href: '/compare', label: 'Compare' },
-          ].map(({ href, label }) => (
-            <a key={href} href={href} style={{
-              color: '#999',
-              textDecoration: 'none',
-              fontSize: '0.9rem',
-              padding: '0 1rem',
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              transition: 'color 0.15s',
-            }}>
-              {label}
-            </a>
-          ))}
+          <a href="/strapi" style={{ color: '#999', textDecoration: 'none', fontSize: '0.9rem', padding: '0 1rem', height: '100%', display: 'flex', alignItems: 'center' }}>
+            Japanese Cookbook
+          </a>
         </nav>
         {children}
       </body>
