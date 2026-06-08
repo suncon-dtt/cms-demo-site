@@ -1,16 +1,17 @@
+import { apiPlugin, storyblokInit } from '@storyblok/js'
+
 const accentColor = '#00b3b0'
 
+const { storyblokApi } = storyblokInit({
+  accessToken: process.env.NEXT_PUBLIC_STORYBLOK_TOKEN!,
+  use: [apiPlugin],
+  region: 'eu',
+})
+
 async function getStoryblokStories() {
-  const token = process.env.NEXT_PUBLIC_STORYBLOK_TOKEN
-  const res = await fetch(
-    `https://api.storyblok.com/v2/cdn/stories?version=draft&token=${token}`,
-    { next: { revalidate: 60 } }
-  )
-  if (!res.ok) {
-    const text = await res.text()
-    throw new Error(`Storyblok error ${res.status}: ${text}`)
-  }
-  const data = await res.json()
+  const { data } = await storyblokApi.get('cdn/stories', {
+    version: 'published',
+  })
   return data.stories as any[]
 }
 
@@ -80,8 +81,6 @@ export default async function StoryblokPage() {
               ].filter(Boolean) as { label: string; value: string }[]}
               rawContent={story.content}
               accentColor={accentColor}
-              isFirst={i === 0}
-              isLast={i === stories.length - 1}
             />
           )
         })}
@@ -120,14 +119,12 @@ function PageHeader({ name, accentColor, tagline, description, docsHint }: {
   )
 }
 
-function ArticleCard({ title, body, meta, rawContent, accentColor, isFirst, isLast }: {
+function ArticleCard({ title, body, meta, rawContent, accentColor }: {
   title: string
   body: string | null
   meta: { label: string; value: string }[]
   rawContent: any
   accentColor: string
-  isFirst: boolean
-  isLast: boolean
 }) {
   return (
     <div style={{
