@@ -11,7 +11,7 @@ async function getStoryblokStories() {
   })
   if (!storyblokApi) throw new Error('Storyblok API not initialised')
   const { data } = await storyblokApi.get('cdn/stories', {
-    version: 'published',
+    version: 'draft',
   })
   return data.stories as any[]
 }
