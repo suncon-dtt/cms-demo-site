@@ -5,6 +5,7 @@ async function getStrapiArticle(id: string) {
   const token = process.env.STRAPI_TOKEN
   const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {}
   const endpoints = ['articles', 'posts', 'blogs', 'pages']
+  const attempts: { endpoint: string; status: number; body: any }[] = []
 
   for (const endpoint of endpoints) {
     try {
@@ -12,13 +13,14 @@ async function getStrapiArticle(id: string) {
         headers,
         next: { revalidate: 0 },
       })
-      if (res.ok) {
-        const data = await res.json()
-        if (data.data) return { item: data.data, baseUrl: url }
-      }
-    } catch {}
+      const body = await res.json()
+      attempts.push({ endpoint, status: res.status, body })
+      if (res.ok && body.data) return { item: body.data, baseUrl: url }
+    } catch (e: any) {
+      attempts.push({ endpoint, status: 0, body: e.message })
+    }
   }
-  throw new Error('Could not load recipe — check that findOne is enabled in Strapi public permissions')
+  return { item: null, baseUrl: url, attempts }
 }
 
 function extractText(value: any): string {
@@ -35,17 +37,10 @@ function extractText(value: any): string {
 }
 
 export default async function StrapiArticlePage({ params }: { params: { id: string } }) {
-  let item: any = null
-  let baseUrl = ''
-  let error: string | null = null
-
-  try {
-    const result = await getStrapiArticle(params.id)
-    item = result.item
-    baseUrl = result.baseUrl
-  } catch (e: any) {
-    error = e.message
-  }
+  const result = await getStrapiArticle(params.id)
+  const item = result.item
+  const baseUrl = result.baseUrl
+  const attempts = (result as any).attempts ?? []
 
   // Strapi v5: fields directly on item | v4: under item.attributes
   const attrs = item?.attributes ?? item ?? {}
@@ -69,9 +64,19 @@ export default async function StrapiArticlePage({ params }: { params: { id: stri
         </a>
       </div>
 
-      {error ? (
+      {!item ? (
         <div style={{ background: '#fff5f5', border: '1px solid #fca5a5', borderRadius: 8, padding: '1rem 1.25rem', color: '#b91c1c', fontSize: '0.9rem' }}>
-          {error}
+          <p style={{ margin: '0 0 1rem', fontWeight: 600 }}>Could not load recipe</p>
+          {attempts.map((a: any, i: number) => (
+            <details key={i} style={{ marginBottom: '0.5rem' }}>
+              <summary style={{ cursor: 'pointer', fontSize: '0.8rem', fontFamily: 'monospace' }}>
+                {a.endpoint} → HTTP {a.status}
+              </summary>
+              <pre style={{ background: '#fff', padding: '0.5rem', borderRadius: 4, fontSize: '0.72rem', overflow: 'auto', marginTop: '0.5rem', color: '#333' }}>
+                {JSON.stringify(a.body, null, 2)}
+              </pre>
+            </details>
+          ))}
         </div>
       ) : (
         <article>
