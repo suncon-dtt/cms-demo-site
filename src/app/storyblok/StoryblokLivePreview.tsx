@@ -4,24 +4,69 @@ import { useStoryblokState } from '@storyblok/react'
 
 const accentColor = '#00b3b0'
 
-function renderBody(body: any): string {
-  if (!body) return ''
-  if (typeof body === 'string') return body
-  if (Array.isArray(body)) {
-    return body
-      .flatMap((block: any) => block.children ?? [])
-      .filter((n: any) => n.type === 'text' && n.text)
-      .map((n: any) => n.text)
-      .join(' ')
+function RichText({ doc }: { doc: any }) {
+  if (!doc) return null
+  if (typeof doc === 'string') return <p style={{ margin: '0 0 1.25rem' }}>{doc}</p>
+  if (doc.type !== 'doc' || !Array.isArray(doc.content)) return null
+
+  return (
+    <>
+      {doc.content.map((block: any, i: number) => (
+        <Block key={i} block={block} />
+      ))}
+    </>
+  )
+}
+
+function Block({ block }: { block: any }) {
+  switch (block.type) {
+    case 'paragraph':
+      return (
+        <p style={{ margin: '0 0 1.1rem', lineHeight: 1.8 }}>
+          {(block.content ?? []).map((n: any, i: number) => <Inline key={i} node={n} />)}
+        </p>
+      )
+    case 'bullet_list':
+      return (
+        <ul style={{ margin: '0 0 1.25rem', paddingLeft: '1.4rem' }}>
+          {(block.content ?? []).map((item: any, i: number) => (
+            <li key={i} style={{ marginBottom: '0.3rem', lineHeight: 1.7 }}>
+              {(item.content ?? []).flatMap((b: any) => b.content ?? []).map((n: any, j: number) => <Inline key={j} node={n} />)}
+            </li>
+          ))}
+        </ul>
+      )
+    case 'ordered_list':
+      return (
+        <ol style={{ margin: '0 0 1.25rem', paddingLeft: '1.4rem' }}>
+          {(block.content ?? []).map((item: any, i: number) => (
+            <li key={i} style={{ marginBottom: '0.3rem', lineHeight: 1.7 }}>
+              {(item.content ?? []).flatMap((b: any) => b.content ?? []).map((n: any, j: number) => <Inline key={j} node={n} />)}
+            </li>
+          ))}
+        </ol>
+      )
+    case 'heading':
+      const level = block.attrs?.level ?? 2
+      const text = (block.content ?? []).map((n: any) => n.text ?? '').join('')
+      const headingStyle = { margin: '1.75rem 0 0.6rem', fontWeight: 700, lineHeight: 1.3, letterSpacing: '-0.01em' }
+      if (level === 1) return <h1 style={{ ...headingStyle, fontSize: '1.6rem' }}>{text}</h1>
+      if (level === 2) return <h2 style={{ ...headingStyle, fontSize: '1.3rem' }}>{text}</h2>
+      return <h3 style={{ ...headingStyle, fontSize: '1.1rem' }}>{text}</h3>
+    case 'horizontal_rule':
+      return <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '1.5rem 0' }} />
+    default:
+      return null
   }
-  if (body?.type === 'doc' && Array.isArray(body.content)) {
-    return body.content
-      .flatMap((block: any) => block.content ?? [])
-      .filter((n: any) => n.type === 'text')
-      .map((n: any) => n.text)
-      .join(' ')
-  }
-  return ''
+}
+
+function Inline({ node }: { node: any }) {
+  if (node.type !== 'text') return null
+  let el: React.ReactNode = node.text
+  if (node.marks?.some((m: any) => m.type === 'bold')) el = <strong>{el}</strong>
+  if (node.marks?.some((m: any) => m.type === 'italic')) el = <em>{el}</em>
+  if (node.marks?.some((m: any) => m.type === 'code')) el = <code style={{ background: '#f0f0f0', padding: '1px 5px', borderRadius: 3, fontSize: '0.9em' }}>{el}</code>
+  return <>{el}</>
 }
 
 export default function StoryblokLivePreview({ initialStory }: { initialStory: any }) {
@@ -29,8 +74,7 @@ export default function StoryblokLivePreview({ initialStory }: { initialStory: a
   const content = story?.content ?? {}
 
   const title = content.title ?? content.name ?? story.name ?? 'Untitled'
-  const intro = typeof content.intro === 'string' ? content.intro : renderBody(content.intro)
-  const body = renderBody(content.body ?? content.content ?? content.description)
+  const intro = typeof content.intro === 'string' ? content.intro : null
   const author = content.author ?? null
   const imageUrl = content.image?.filename ?? null
   const date = story.published_at ?? story.created_at
@@ -49,9 +93,7 @@ export default function StoryblokLivePreview({ initialStory }: { initialStory: a
         </h1>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.75rem', flexWrap: 'wrap' }}>
-          {author && (
-            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: accentColor }}>{author}</span>
-          )}
+          {author && <span style={{ fontSize: '0.85rem', fontWeight: 600, color: accentColor }}>{author}</span>}
           {date && (
             <span style={{ fontSize: '0.8rem', color: '#aaa' }}>
               {new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -68,15 +110,9 @@ export default function StoryblokLivePreview({ initialStory }: { initialStory: a
           </p>
         )}
 
-        {body ? (
-          <div style={{ color: '#333', fontSize: '1rem', lineHeight: 1.8 }}>
-            {body.split('\n').filter(Boolean).map((para, i) => (
-              <p key={i} style={{ margin: '0 0 1.25rem' }}>{para}</p>
-            ))}
-          </div>
-        ) : (
-          <p style={{ color: '#bbb', fontStyle: 'italic' }}>No content yet — add a body field in Storyblok.</p>
-        )}
+        <div style={{ color: '#333', fontSize: '1rem' }}>
+          <RichText doc={content.body ?? content.content ?? content.description} />
+        </div>
 
         <details style={{ marginTop: '3rem', borderTop: '1px solid #eee', paddingTop: '1rem' }}>
           <summary style={{ cursor: 'pointer', fontSize: '0.78rem', color: '#ccc', userSelect: 'none' }}>Raw API response</summary>
