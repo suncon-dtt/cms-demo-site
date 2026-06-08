@@ -1,5 +1,7 @@
 import { apiPlugin, storyblokInit } from '@storyblok/js'
 
+export const revalidate = 0
+
 const accentColor = '#00b3b0'
 
 async function getStoryblokStories() {

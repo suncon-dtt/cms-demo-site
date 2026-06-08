@@ -3,6 +3,8 @@ import { apiPlugin, storyblokInit } from '@storyblok/js'
 import StoryblokProvider from '../StoryblokProvider'
 import StoryblokLivePreview from '../StoryblokLivePreview'
 
+export const revalidate = 0
+
 const accentColor = '#00b3b0'
 
 function getApi() {
