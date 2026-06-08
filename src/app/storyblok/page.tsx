@@ -2,13 +2,12 @@ import { apiPlugin, storyblokInit } from '@storyblok/js'
 
 const accentColor = '#00b3b0'
 
-const { storyblokApi } = storyblokInit({
-  accessToken: process.env.NEXT_PUBLIC_STORYBLOK_TOKEN!,
-  use: [apiPlugin],
-  region: 'eu',
-})
-
 async function getStoryblokStories() {
+  const { storyblokApi } = storyblokInit({
+    accessToken: process.env.NEXT_PUBLIC_STORYBLOK_TOKEN!,
+    use: [apiPlugin],
+  })
+  if (!storyblokApi) throw new Error('Storyblok API not initialised')
   const { data } = await storyblokApi.get('cdn/stories', {
     version: 'published',
   })
@@ -67,21 +66,22 @@ export default async function StoryblokPage() {
       )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', background: '#e8e8e8', borderRadius: 10, overflow: 'hidden', border: '1px solid #e8e8e8' }}>
-        {stories.map((story, i) => {
+        {stories.map((story) => {
           const body = renderStoryblokField(story.content?.body) || renderStoryblokField(story.content?.intro)
           const date = story.published_at || story.created_at
           return (
-            <ArticleCard
-              key={story.id}
-              title={story.name}
-              body={body}
-              meta={[
-                { label: 'Slug', value: story.slug },
-                date ? { label: 'Published', value: new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) } : null,
-              ].filter(Boolean) as { label: string; value: string }[]}
-              rawContent={story.content}
-              accentColor={accentColor}
-            />
+            <a key={story.id} href={`/storyblok/${story.slug}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+              <ArticleCard
+                title={story.name}
+                body={body}
+                meta={[
+                  { label: 'Slug', value: story.slug },
+                  date ? { label: 'Published', value: new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) } : null,
+                ].filter(Boolean) as { label: string; value: string }[]}
+                rawContent={story.content}
+                accentColor={accentColor}
+              />
+            </a>
           )
         })}
       </div>

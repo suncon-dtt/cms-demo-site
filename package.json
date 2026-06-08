@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@storyblok/js": "^5.1.9",
+    "@storyblok/react": "^6.1.10",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18"
