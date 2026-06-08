@@ -3,13 +3,22 @@ const accentColor = '#4945ff'
 async function getStrapiArticle(id: string) {
   const url = process.env.STRAPI_URL || 'http://localhost:1337'
   const token = process.env.STRAPI_TOKEN
-  const res = await fetch(`${url}/api/articles/${id}?populate=*`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-    next: { revalidate: 0 },
-  })
-  if (!res.ok) throw new Error(`Could not load recipe (${res.status})`)
-  const data = await res.json()
-  return { item: data.data, baseUrl: url }
+  const headers = token ? { Authorization: `Bearer ${token}` } : {}
+  const endpoints = ['articles', 'posts', 'blogs', 'pages']
+
+  for (const endpoint of endpoints) {
+    try {
+      const res = await fetch(`${url}/api/${endpoint}/${id}?populate=*`, {
+        headers,
+        next: { revalidate: 0 },
+      })
+      if (res.ok) {
+        const data = await res.json()
+        if (data.data) return { item: data.data, baseUrl: url }
+      }
+    } catch {}
+  }
+  throw new Error('Could not load recipe — check that findOne is enabled in Strapi public permissions')
 }
 
 function extractText(value: any): string {
