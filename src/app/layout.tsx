@@ -7,16 +7,61 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body style={{ fontFamily: 'system-ui, sans-serif', margin: 0, background: '#f5f5f5' }}>
+      <head>
+        <style>{`
+          *, *::before, *::after { box-sizing: border-box; }
+          html { font-size: 16px; }
+          body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f8f8;
+            color: #1a1a1a;
+            line-height: 1.6;
+          }
+          a { color: inherit; }
+          nav a:hover { color: #fff !important; }
+          .nav-link-active { color: #fff !important; border-bottom: 2px solid #fff; }
+        `}</style>
+      </head>
+      <body>
         <nav style={{
-          background: '#1a1a2e', color: 'white', padding: '1rem 2rem',
-          display: 'flex', gap: '2rem', alignItems: 'center'
+          background: '#111',
+          padding: '0 2rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0',
+          height: 56,
+          borderBottom: '1px solid #222',
         }}>
-          <span style={{ fontWeight: 700, fontSize: '1.1rem' }}>CMS Demo</span>
-          <a href="/" style={{ color: '#ccc', textDecoration: 'none' }}>Home</a>
-          <a href="/storyblok" style={{ color: '#ccc', textDecoration: 'none' }}>Storyblok</a>
-          <a href="/strapi" style={{ color: '#ccc', textDecoration: 'none' }}>Strapi</a>
-          <a href="/compare" style={{ color: '#ccc', textDecoration: 'none' }}>Compare</a>
+          <a href="/" style={{
+            fontWeight: 700,
+            fontSize: '0.95rem',
+            color: '#fff',
+            textDecoration: 'none',
+            letterSpacing: '0.02em',
+            marginRight: '2rem',
+          }}>
+            CMS Demo
+          </a>
+          {[
+            { href: '/', label: 'Home' },
+            { href: '/storyblok', label: 'Storyblok' },
+            { href: '/strapi', label: 'Strapi' },
+            { href: '/compare', label: 'Compare' },
+          ].map(({ href, label }) => (
+            <a key={href} href={href} style={{
+              color: '#999',
+              textDecoration: 'none',
+              fontSize: '0.9rem',
+              padding: '0 1rem',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              transition: 'color 0.15s',
+            }}>
+              {label}
+            </a>
+          ))}
         </nav>
         {children}
       </body>
