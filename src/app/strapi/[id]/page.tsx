@@ -3,7 +3,7 @@ const accentColor = '#4945ff'
 async function getStrapiArticle(id: string) {
   const url = process.env.STRAPI_URL || 'http://localhost:1337'
   const token = process.env.STRAPI_TOKEN
-  const headers = token ? { Authorization: `Bearer ${token}` } : {}
+  const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {}
   const endpoints = ['articles', 'posts', 'blogs', 'pages']
 
   for (const endpoint of endpoints) {
